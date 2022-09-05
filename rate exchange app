@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            height: 60vh;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div>
+            <div>
+                <select id="currency-one">
+                    <option value="USD">USD</option>
+                    <option value="EURO">EURO</option>
+                    <option value="TND" selected>TND</option>
+                </select>
+                <input type="number" id="amount1">
+            </div>
+            <div>
+                <div><button id="convert">convert</button></div>
+                <div id="rate"></div>
+            </div>
+            <div>
+                <select id="currency-two">
+                    <option value="USD">USD</option>
+                    <option value="EURO" selected>EURO</option>
+                    <option value="TND">TND</option>
+                </select>
+
+                <input type="number" id="amount2">
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>const baseCurrency = document.querySelector("#currency-one")
+const cibleCurrency = document.querySelector("#currency-two")
+const amount1 = document.querySelector("#amount1")
+const amount2 = document.querySelector("#amount2")
+const convert = document.querySelector("#convert")
+const rateEl = document.querySelector('#rate');
+
+//fetch currency rates and update the dom 
+    function calculate() {
+        const currency_one = baseCurrency.value;
+        const currency_two = cibleCurrency.value;
+
+        fetch(`http://api.exchangeratesapi.io/v1/latest?access_key=01516af766696ad129b060a627689d8e`)
+            .then((res) => res.json())
+            .then((data) => {
+                 console.log(data);
+                const rate = data.rates[currency_two];
+                rateEl.innerText = `1 ${currency_one} = ${rate} ${currency_two}`;
+
+                amount2.value = (amount1.value * rate).toFixed(2);
+            });
+    }
+    baseCurrency.addEventListener('change', calculate)
+    cibleCurrency.addEventListener('change', calculate)
+    amount1.addEventListener('input', calculate)
+    amount2.addEventListener('input', calculate)
+    convert.addEventListener('click', () => {
+        const temp = baseCurrency.value;
+        baseCurrency.value = cibleCurrency.value;
+        cibleCurrency.value = temp;
+        calculate();
+    });
+    calculate();
+    </script>
+</body>
+
+</html>
